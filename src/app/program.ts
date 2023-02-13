@@ -1,25 +1,13 @@
+import { program } from "commander";
+import { version } from "../../package.json";
+import compile from "./compile";
 
-import {
-	action, command, commandOption, description, option,
-	optionalArg, program, requiredArg, usage,
-	variadicArg, version,
-	Command
-} from 'commander-ts';
-import { version as compilerVersion } from "../../package.json";
-import compile from './compile';
-
-@program()
-@version(compilerVersion)
-@description('A basic program')
-@usage('--help')
-export class Program {
-	@option('--env <env>')
-	env: string | null = null;
-
-	constructor() {}
-
-	run(@requiredArg('path') path: string) {
-		compile(path);
-	}
-}
+export default program
+	.version(version)
+	.name('Basl')
+	.description('The official Basl compiler')
+	.argument('<path>', 'Path to compile')
+	.action((path: string) => {
+		compile(path)
+	});
 

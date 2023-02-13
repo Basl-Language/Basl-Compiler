@@ -34,6 +34,6 @@
   },
   "homepage": "https://github.com/Basl-Language/Basl-Compiler#readme",
   "dependencies": {
-    "commander-ts": "^0.2.0"
+    "commander": "^10.0.0"
   }
 }
