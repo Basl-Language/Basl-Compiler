@@ -32,5 +32,8 @@
   "bugs": {
     "url": "https://github.com/Basl-Language/Basl-Compiler/issues"
   },
-  "homepage": "https://github.com/Basl-Language/Basl-Compiler#readme"
+  "homepage": "https://github.com/Basl-Language/Basl-Compiler#readme",
+  "dependencies": {
+    "commander-ts": "^0.2.0"
+  }
 }

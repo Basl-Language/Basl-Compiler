@@ -1,6 +1,6 @@
 
 import Lexer from "../lexer";
 
-export default () => {
+export default (path: string) => {
     let lexer = new Lexer();
 }
