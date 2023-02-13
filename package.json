@@ -1,5 +1,22 @@
 {
+  "scripts": {
+    "build": ""
+  },
   "devDependencies": {
     "typescript": "^4.9.5"
-  }
+  },
+  "name": "basl-compiler",
+  "description": "BASL is the best compiler ever, and you cannot say otherwise. It's fast and reliable, and quite literally amazing.",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Basl-Language/Basl-Compiler.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Basl-Language/Basl-Compiler/issues"
+  },
+  "homepage": "https://github.com/Basl-Language/Basl-Compiler#readme"
 }
