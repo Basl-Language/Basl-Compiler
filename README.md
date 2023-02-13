@@ -1,2 +1,3 @@
 # Basl-Compiler
-Compiler for the Bad Ass Language.
+BASL is the best compiler ever, and you cannot say otherwise.
+It's fast and reliable, and quite literally amazing.
