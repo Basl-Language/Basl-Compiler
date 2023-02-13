@@ -13,11 +13,11 @@ export enum TT {
     SYM_DOT,           // Symbol: .
     SYM_HASH,          // Symbol: #
     SYM_COMMA,         // Symbol: ,
-    SYM_COLLON,        // Symbol: :
+    SYM_COLON,        // Symbol: :
     SYM_COLCOL,        // Symbol: ::
     SYM_DOLLAR,        // Symbol: $
     SYM_QUESTION,      // Symbol: ?
-    SYM_SEMI_COLLON,   // Symbol: ;
+    SYM_SEMI_COLON,   // Symbol: ;
 
     // Brackets
     BRACKET_LCURLY,    // Symbol: {
