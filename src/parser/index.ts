@@ -4,13 +4,25 @@ import SrcObject from "../common/SrcObject";
 import { Token, TT } from "../lexer/tokens";
 import ParameterClause from "./nodes/clauses/parameterclause";
 import TypeClause from "./nodes/clauses/typeclause";
+import BinaryExpression from "./nodes/expressions/binaryexpression";
+import CallExpression from "./nodes/expressions/callexpression";
+import LiteralExpression from "./nodes/expressions/literalexpression";
+import UnaryExpression from "./nodes/expressions/unaryexpression";
+import VariableExpression from "./nodes/expressions/variableexpression";
 import EntryMember from "./nodes/members/entrymember";
 import EventMember from "./nodes/members/eventmember";
 import FuncMember from "./nodes/members/funcmember";
 import MethodMember from "./nodes/members/methodmember";
 import StructMember from "./nodes/members/structmember";
+import Operators from "./nodes/operators";
 import BlockStatement from "./nodes/statements/blockstatement";
-import { MemberNode, StatementNode } from "./nodes/syntaxnode";
+import ExpressionStatement from "./nodes/statements/expressionstatement";
+import ForeachStatement from "./nodes/statements/foreachstatement";
+import ForStatement from "./nodes/statements/forstatement";
+import IfStatement from "./nodes/statements/ifstatement";
+import LocalStatement from "./nodes/statements/localstatement";
+import WhileStatement from "./nodes/statements/whilestatement";
+import { ExpressionNode, MemberNode, StatementNode } from "./nodes/syntaxnode";
 
 
 export default class /* Parser */ extends SrcObject {
@@ -226,7 +238,7 @@ export default class /* Parser */ extends SrcObject {
 		//                                   ^^^^^^^
 		var body: BlockStatement = this.parseBlockStatement();
 
-		return new MethodMember(this._source, baseStruct, identifier, parameters, returnType);
+		return new MethodMember(this._source, baseStruct, identifier, parameters, returnType, body);
 	}
 
 	// -------------------------------------------------------------------------
@@ -298,8 +310,29 @@ export default class /* Parser */ extends SrcObject {
 		var statement: StatementNode;
 
 		switch (this.current().type) {
+			// These statements should not expect a semicolon
 			case TT.BRACKET_LCURLY:
-				statement = this.parseBlockStatement();
+				return this.parseBlockStatement();
+
+			case TT.KW_IF:
+				return this.parseIfStatement();
+
+			case TT.KW_WHILE:
+				return this.parseWhileStatement();
+
+			case TT.KW_FOR:
+				return this.parseForStatement();
+				
+			case TT.KW_FOREACH:
+				return this.parseForeachStatement();
+
+			// These should expect a semicolon
+			case TT.KW_LOCAL:
+				statement = this.parseLocalStatement();
+				break;
+
+			default:
+				statement = this.parseExpressionStatement();
 				break;
 		}
 
@@ -325,5 +358,191 @@ export default class /* Parser */ extends SrcObject {
 		this.consume(TT.BRACKET_RCURLY);
 
 		return new BlockStatement(this._source, statements);
+	}
+
+	private parseIfStatement(): IfStatement {
+		var ifKw: Token = this.consume(TT.KW_IF);
+		var condition: ExpressionNode = this.parseExpression();
+		var thenStmt: StatementNode = this.parseStatement();
+
+		// optional else statement
+		var elseStmt: StatementNode;
+		if (this.current().type == TT.KW_ELSE) {
+			this.consume(TT.KW_ELSE);
+			elseStmt = this.parseStatement();
+		}
+
+		return new IfStatement(this._source, ifKw, condition, thenStmt, elseStmt);
+	}
+	
+	private parseWhileStatement(): WhileStatement {
+		var whileKw: Token = this.consume(TT.KW_WHILE);
+		var condition: ExpressionNode = this.parseExpression();
+		var loopStmt: StatementNode = this.parseStatement();
+		
+		return new WhileStatement(this._source, whileKw, condition, loopStmt);
+	}
+
+	private parseForStatement(): ForStatement {
+		var forKw: Token = this.consume(TT.KW_FOR);
+
+		var initializer: StatementNode = this.parseStatement();
+		var condition: ExpressionNode = this.parseExpression();
+		var step: StatementNode = this.parseStatement();
+
+		var loopStmt: StatementNode = this.parseStatement();
+
+		return new ForStatement(this._source, forKw, initializer, condition, step, loopStmt);
+	}
+
+	private parseForeachStatement(): ForeachStatement {
+		var foreachKw: Token = this.consume(TT.KW_FOREACH);
+		var iterator: Token = this.consume(TT.IDENTIFIER);
+		
+		this.consume(TT.KW_IN);
+
+		var iterationSource: ExpressionNode = this.parseExpression();
+
+		return new ForeachStatement(this._source, foreachKw, iterator, iterationSource);
+	}
+
+	private parseLocalStatement(): LocalStatement {
+		var localKw: Token = this.consume(TT.KW_LOCAL);
+		
+		// is there a datatype given for this variable?
+		// local [type:] myVar [= 100];
+		var explicitType: TypeClause;
+		if (this.peek(1).type != TT.OP_EQ && 
+		    this.peek(1).type != TT.SYM_SEMICOLON) {
+
+			explicitType = this.parseTypeClause();
+			this.consume(TT.SYM_COLON);
+		}
+
+		// whats this variable called?
+		var identifier: Token = this.consume(TT.IDENTIFIER);
+
+		// do we have an initializer?
+		var initializer: ExpressionNode;
+		if (this.current().type == TT.OP_EQ) {
+			this.consume(TT.OP_EQ);
+			initializer = this.parseExpression();
+		}
+
+		return new LocalStatement(this._source, localKw, explicitType, identifier, initializer);
+	}
+
+	private parseExpressionStatement(): ExpressionStatement {
+		var expression: ExpressionNode = this.parseExpression();
+		return new ExpressionStatement(this._source, expression);
+	}
+
+	// -------------------------------------------------------------------------
+	// Expressions
+	// -------------------------------------------------------------------------
+	private parseExpression(): ExpressionNode {
+		// some crazy complex expressions would go here
+		// stuff that you wouldnt want inside a binary expression
+
+		return this.parseBinaryExpression();
+	}
+
+	private parseBinaryExpression(parentPrecendence: number = 0): ExpressionNode {
+		var left: ExpressionNode;
+
+		// okay but like, is this actually a unary expression?
+		var unaryPrecedence: number = Operators.getUnaryOperatorPrecedence(this.current().type);
+		if (unaryPrecedence != 0 && unaryPrecedence > parentPrecendence) {
+			// next token is our operator
+			var operator: Token = this.consume(this.current().type);
+
+			// then the expression
+			var operand: ExpressionNode = this.parseBinaryExpression(unaryPrecedence);
+
+			// done
+			return new UnaryExpression(this._source, operator, operand);
+		}
+
+		// okay nah its a binary one
+
+		left = this.parsePrimaryExpression();
+
+		while (true) {
+			var precedence: number = Operators.getBinaryOperatorPrecedence(this.current().type);
+			
+			// either not an operator or less important than our parent operator
+			if (precedence == 0 || precedence < parentPrecendence) {
+				break;
+			}
+
+			// parse both operator and the other side of the expression
+			var operator: Token = this.consume(this.current().type);
+			var right: ExpressionNode = this.parseBinaryExpression(precedence);
+
+			// move all this to the left side and start again
+			left = new BinaryExpression(this._source, left, operator, right);
+		}
+
+		return left;
+	}
+
+	private parsePrimaryExpression(): ExpressionNode {
+		switch (this.current().type) {
+			case TT.VALUE_NULL:
+			case TT.VALUE_BOOL:
+			case TT.VALUE_NUMBER:
+			case TT.VALUE_FLOAT:
+			case TT.VALUE_STRING:
+				return this.parseLiteralExpression();
+
+			case TT.IDENTIFIER:
+				if (this.peek(1).type == TT.BRACKET_LPARENT) {
+					return this.parseCallExpression();
+				} else {
+					return this.parseVariableExpression();
+				}
+
+			default:
+				throw new Error(`Wow sucks to be you i guess. Expected an expression but got ${this.current().type}`);
+		}
+	}
+
+	private parseLiteralExpression(): LiteralExpression {
+		// just consume the next token we got
+		var value: Token = this.consume(this.current().type);
+
+		return new LiteralExpression(this._source, value);
+	}
+
+	private parseCallExpression(): CallExpression {
+		// what are we calling?
+		var identifier: Token = this.consume(TT.IDENTIFIER);
+
+		this.consume(TT.BRACKET_LPARENT);
+
+		// what are we calling with?
+		var args: ExpressionNode[] = [];
+		while (this.current().type != TT.EOF &&
+		       this.current().type != TT.BRACKET_RPARENT) {
+
+			args.push(this.parseExpression());
+
+			// no comma? no bitches
+			if (this.current().type != TT.SYM_COMMA) {
+				break;
+			}
+
+			this.consume(TT.SYM_COMMA);
+		}
+
+		this.consume(TT.BRACKET_RPARENT);
+
+		return new CallExpression(this._source, identifier, args);
+	}
+
+	private parseVariableExpression(): VariableExpression {
+		// just a variable name
+		var identifier: Token = this.consume(TT.IDENTIFIER);
+		return new VariableExpression(this._source, identifier);
 	}
 }

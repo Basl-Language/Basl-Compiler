@@ -87,6 +87,8 @@ export enum TT {
     KW_WHILE,
     KW_FOR,
     KW_FOREACH,
+    KW_IN,
+    KW_LOCAL,
 
     EOF,               // End of file. This already exists in <stdio.h>
     UNKNOWN,           // Other

@@ -11,7 +11,7 @@ export enum NT {
 
     // Clauses
     // -------
-    CLAUSE_PARAMETER,
+    CLAUSE_PARAMETER, 
     CLAUSE_TYPE,
 
     // Statements
@@ -21,7 +21,14 @@ export enum NT {
     STATEMENT_WHILE,
     STATEMENT_FOR,
     STATEMENT_FOREACH,
+    STATEMENT_LOCAL,
+    STATEMENT_EXPRESSION,
 
     // Expressions
     // -----------
+    EXPRESSION_LITERAL,
+    EXPRESSION_UNARY,
+    EXPRESSION_BINARY,
+    EXPRESSION_VARIABLE,
+    EXPRESSION_CALL,
 };
