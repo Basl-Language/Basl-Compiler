@@ -1,4 +1,3 @@
-
 export enum TT {
     IDENTIFIER,
 
@@ -95,19 +94,19 @@ export enum TT {
 };
 
 export class Token {
-    private _type: TT;
-    private _value: string = "";
+  private _type: TT;
+  private _value = '';
 
-    constructor(t: TT, value: string = "<unknown>") {
-        this._type = t;
-        this._value = value;
-    }
+  constructor(t: TT, value = '<unknown>') {
+    this._type = t;
+    this._value = value;
+  }
 
-    public get type(): TT {
-        return this._type;
-    }
+  public get type(): TT {
+    return this._type;
+  }
 
-    public get value() {
-        return this._value;
-    }
-};
+  public get value() {
+    return this._value;
+  }
+}
