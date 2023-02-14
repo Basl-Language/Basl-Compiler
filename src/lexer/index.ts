@@ -65,6 +65,9 @@ export default class Lexer extends SrcObject {
       if (this._char == '.') isFloat = true;
 
       fullNumStr += this._char;
+
+      console.log("Stuck on Number");
+
       this.next();
     }
 
@@ -76,6 +79,7 @@ export default class Lexer extends SrcObject {
 
     while (this._char != '"') {
       fullStr += this._char;
+      console.log("Stuck on String");
       this.next();
     }
 
@@ -84,7 +88,7 @@ export default class Lexer extends SrcObject {
 
   // something.
   public isLetter(c: string): boolean {
-    return c.toLowerCase() != c.toUpperCase();
+    return /[A-Z][a-z]/.test(c);
   }
 
   public collectIdentifier(): Token {
@@ -92,6 +96,7 @@ export default class Lexer extends SrcObject {
 
     while (this.isLetter(this._char)) {
       fullIdent += this._char;
+      console.log("Stuck on Identifier");
       this.next();
     }
 
@@ -133,8 +138,11 @@ export default class Lexer extends SrcObject {
     {
         if(/\s/.test(this._char))
             continue; // skip whitespace
-        if(this._char == '"')
+        if(this._char == "\"")
+        {
+            this.next();
             this._tokens.push(this.collectString());
+        }
         if(this.isSpecial(this._char))
             this._tokens.push(this.collectSymbol());
         if(this.isLetter(this._char))
@@ -142,10 +150,13 @@ export default class Lexer extends SrcObject {
         if(!isNaN(parseInt(this._char)))
             this._tokens.push(this.collectNumber());
         this.next();
+        console.log("Hello");
     }
+
+    
   }
 
-  
+
   public get tokens() {
     return this._tokens;
   }
