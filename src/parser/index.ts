@@ -1,4 +1,5 @@
 
+import DBGSourceInfo from "../common/DBGSourceInfo";
 import { Source } from "../common/Source";
 import SrcObject from "../common/SrcObject";
 import { Token, TT } from "../lexer/tokens";
@@ -546,5 +547,17 @@ export default class /* Parser */ extends SrcObject {
 		// just a variable name
 		var identifier: Token = this.consume(TT.IDENTIFIER);
 		return new VariableExpression(this._source, identifier);
+	}
+
+	private newNode<T extends any>(type: { new(...targs: any): T ;}, dbg: DBGSourceInfo|undefined = undefined, ...args: any[]) {
+		let n = new type(...args) as any;
+
+		if (typeof dbg === "undefined") {
+			dbg = DBGSourceInfo.fromToken(this._source, this.current());
+		}
+
+		n.dbgInfo(dbg);
+
+		return n;
 	}
 }

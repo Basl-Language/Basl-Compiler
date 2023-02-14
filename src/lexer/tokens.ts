@@ -97,6 +97,9 @@ export class Token {
   private _type: TT;
   private _value = '';
 
+  public readonly pos: [number, number] = [-1,-1];
+  public readonly width: number = 1;
+
   constructor(t: TT, value = '<unknown>') {
     this._type = t;
     this._value = value;
