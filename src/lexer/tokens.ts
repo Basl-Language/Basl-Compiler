@@ -13,11 +13,11 @@ export enum TT {
     SYM_DOT,           // Symbol: .
     SYM_HASH,          // Symbol: #
     SYM_COMMA,         // Symbol: ,
-    SYM_COLLON,        // Symbol: :
+    SYM_COLON,         // Symbol: :
     SYM_COLCOL,        // Symbol: ::
     SYM_DOLLAR,        // Symbol: $
     SYM_QUESTION,      // Symbol: ?
-    SYM_SEMI_COLLON,   // Symbol: ;
+    SYM_SEMICOLON,     // Symbol: ;
 
     // Brackets
     BRACKET_LCURLY,    // Symbol: {
@@ -76,6 +76,17 @@ export enum TT {
 
     __KWORD_START,     // Start of the keyword list
     __KWORD_END,       // End of the keyword list
+
+    KW_FUNC,
+    KW_EVENT,
+    KW_ENTRY,
+    KW_NS,
+    KW_STRUCT,
+    KW_IF,
+    KW_ELSE,
+    KW_WHILE,
+    KW_FOR,
+    KW_FOREACH,
 
     EOF,               // End of file. This already exists in <stdio.h>
     UNKNOWN,           // Other

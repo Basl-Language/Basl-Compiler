@@ -17,12 +17,14 @@ export default class StructMember extends MemberNode {
 	// 
 	// these struct fields are literally the same format as parameters
 	// so ill be recycling those here
+	StructKeyword: Token;
 	Identifier: Token;
 	Fields: ParameterClause[]
 
-	constructor(source: Source, id: Token, fields: ParameterClause[]) {
+	constructor(source: Source, structKw: Token, id: Token, fields: ParameterClause[]) {
 		super(source);
 
+		this.StructKeyword = structKw;
 		this.Identifier = id;
 		this.Fields = fields;
 	}

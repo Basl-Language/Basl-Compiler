@@ -12,13 +12,15 @@ export default class EventMember extends MemberNode {
 	NodeType: NT = NT.MEMBER_FUNC;
 	
 	// Events are functions lite, no return type because yes
+	EventKeyword: Token;
 	Identifier: Token;
 	Parameters: ParameterClause[];
 	Body: BlockStatement;
 
-	constructor(source: Source, id: Token, params: ParameterClause[], body: BlockStatement) {
+	constructor(source: Source, eventKw: Token, id: Token, params: ParameterClause[], body: BlockStatement) {
 		super(source);
 
+		this.EventKeyword = eventKw;
 		this.Identifier = id;
 		this.Parameters = params;
 		this.Body = body;

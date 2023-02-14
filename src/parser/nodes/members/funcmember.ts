@@ -12,14 +12,16 @@ export default class FuncMember extends MemberNode {
 	NodeType: NT = NT.MEMBER_FUNC;
 	
 	// Functions have a name, parameters, return type and body
+	FuncKeyword: Token;
 	Identifier: Token;
 	Parameters: ParameterClause[];
 	ReturnType: TypeClause;
 	Body: BlockStatement;
 X
-	constructor(source: Source, id: Token, params: ParameterClause[], retType: TypeClause, body: BlockStatement) {
+	constructor(source: Source, funcKw: Token, id: Token, params: ParameterClause[], retType: TypeClause, body: BlockStatement) {
 		super(source);
 
+		this.FuncKeyword = funcKw;
 		this.Identifier = id;
 		this.Parameters = params;
 		this.ReturnType = retType;
