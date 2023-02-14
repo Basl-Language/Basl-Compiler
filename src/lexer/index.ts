@@ -145,6 +145,7 @@ export default class Lexer extends SrcObject {
     }
   }
 
+  
   public get tokens() {
     return this._tokens;
   }

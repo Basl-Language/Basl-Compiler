@@ -3,7 +3,7 @@
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
-    "dev": "ts-node src/app/index.ts",
+    "dev": "ts-node src/app/index.ts --",
     "fix": "gts fix",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
