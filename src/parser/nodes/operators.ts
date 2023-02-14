@@ -1,8 +1,8 @@
 import { TT } from "../../lexer/tokens";
 
-export default class Operators {
+export default class {
 
-	static getUnaryOperatorPrecedence(t: TT) {
+	public static getUnaryOperatorPrecedence(t: TT) {
 		// TODO: someone fill this in please
 		switch (t) {
 			case TT.OP_PLUS:
@@ -15,7 +15,7 @@ export default class Operators {
 		}
 	}
 
-	static getBinaryOperatorPrecedence(t: TT) {
+	public static getBinaryOperatorPrecedence(t: TT) {
 		// TODO: someone fill this in please
 		switch (t) {
 			case TT.OP_MUL:

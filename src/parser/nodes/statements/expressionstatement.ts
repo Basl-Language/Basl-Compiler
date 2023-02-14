@@ -1,12 +1,8 @@
 import { Source } from "../../../common/Source";
-import { NT } from "../nodetypes";
 import { ExpressionNode, StatementNode } from "../syntaxnode";
 
+// E x p r e s s i o n s t a t e m e n t
 export default class ExpressionStatement extends StatementNode {
-
-	// E x p r e s s i o n s t a t e m e n t
-	NodeType: NT = NT.STATEMENT_EXPRESSION;
-
 	// Literally just an expression in a trench coat
 	Expression: ExpressionNode;
 

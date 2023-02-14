@@ -1,12 +1,9 @@
 import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
-import { NT } from "../nodetypes";
 import { ExpressionNode } from "../syntaxnode";
 
+// This is a call expression
 export default class CallExpression extends ExpressionNode {
-
-	// This is a call expression
-	NodeType: NT = NT.EXPRESSION_CALL;
 
 	Identifier: Token;
 	Arguments: ExpressionNode[];

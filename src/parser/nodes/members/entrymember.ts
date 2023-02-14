@@ -1,14 +1,12 @@
 import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
 import ParameterClause from "../clauses/parameterclause";
-import { NT } from "../nodetypes";
 import BlockStatement from "../statements/blockstatement";
 import { MemberNode } from "../syntaxnode";
 
-export default class EntryMember extends MemberNode {
 
-	// This is an entry member
-	NodeType: NT = NT.MEMBER_ENTRY;
+// This is an entry member
+export default class EntryMember extends MemberNode {
 
 	// Parts of the entry member
 	// Entry: <identifier>(<param>, <param>) { ... }

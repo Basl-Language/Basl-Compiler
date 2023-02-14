@@ -1,18 +1,16 @@
 
 import { Source } from "../../common/Source";
 import SrcObject from "../../common/SrcObject";
-import { NT } from "./nodetypes";
+import DBGSourced from "../../common/DBGSourced";
 
 // =============================================================================
 // Node base class, doesnt do shit, but is the base of everything else
 
 /// @brief Base syntax tree node class, all nodes inherit from this.
-export abstract class Node extends SrcObject {
+export abstract class Node extends DBGSourced {
     constructor(src: Source) {
         super(src);
     }
-
-	abstract readonly NodeType: NT
 }
 
 // =============================================================================

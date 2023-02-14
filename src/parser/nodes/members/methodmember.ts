@@ -2,15 +2,13 @@ import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
 import ParameterClause from "../clauses/parameterclause";
 import TypeClause from "../clauses/typeclause";
-import { NT } from "../nodetypes";
+
 import BlockStatement from "../statements/blockstatement";
 import { MemberNode } from "../syntaxnode";
 
+// Meth member
 export default class MethodMember extends MemberNode {
 
-	// Meth member
-	NodeType: NT = NT.MEMBER_METHOD;
-	
 	// Basically a function but with an extra ID token
 	// <base>: <identifier>(<param>, <param>) <rettype> { ... }
 	Base: Token;

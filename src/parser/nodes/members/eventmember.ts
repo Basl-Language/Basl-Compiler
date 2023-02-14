@@ -2,15 +2,13 @@ import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
 import ParameterClause from "../clauses/parameterclause";
 import TypeClause from "../clauses/typeclause";
-import { NT } from "../nodetypes";
+
 import BlockStatement from "../statements/blockstatement";
 import { MemberNode } from "../syntaxnode";
 
+// This do be a Func member
 export default class EventMember extends MemberNode {
 
-	// This do be a Func member
-	NodeType: NT = NT.MEMBER_FUNC;
-	
 	// Events are functions lite, no return type because yes
 	EventKeyword: Token;
 	Identifier: Token;

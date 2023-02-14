@@ -1,12 +1,9 @@
 import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
-import { NT } from "../nodetypes";
 import { ExpressionNode, StatementNode } from "../syntaxnode";
 
+// This is a while statement!
 export default class WhileStatement extends StatementNode {
-
-	// This is a while statement!
-	NodeType: NT = NT.STATEMENT_WHILE;
 
 	// while { ... }
 	WhileKeyword: Token;

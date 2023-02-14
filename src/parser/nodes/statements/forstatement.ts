@@ -1,13 +1,10 @@
 import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
-import { NT } from "../nodetypes";
+
 import { ExpressionNode, StatementNode } from "../syntaxnode";
 
+// This is a for statement
 export default class ForStatement extends StatementNode {
-
-	// This is a for statement
-	NodeType: NT = NT.STATEMENT_FOR;
-
 	// for local i = 0; i < 100; i++ { ... }
 	ForKeyword: Token;
 	Initializer: StatementNode;

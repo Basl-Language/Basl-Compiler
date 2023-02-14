@@ -1,12 +1,10 @@
 import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
-import { NT } from "../nodetypes";
+
 import { ExpressionNode } from "../syntaxnode";
 
+// Very cool binary expression
 export default class BinaryExpression extends ExpressionNode {
-
-	// Very cool binary expression
-	NodeType: NT = NT.EXPRESSION_BINARY;
 
 	OperandA: ExpressionNode;
 	Operator: Token;

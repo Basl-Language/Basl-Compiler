@@ -1,12 +1,9 @@
 import { Source } from "../../../common/Source";
-import { NT } from "../nodetypes";
 import { StatementNode } from "../syntaxnode";
 
+// This is, indeed, a block statement
 export default class BlockStatement extends StatementNode {
-	
-	// This is, indeed, a block statement
-	NodeType: NT = NT.STATEMENT_BLOCK;
-	
+
 	// Block statement is just a list of statements
 	Statements: StatementNode[]
 

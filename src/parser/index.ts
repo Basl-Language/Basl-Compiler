@@ -162,6 +162,8 @@ export default class /* Parser */ extends SrcObject {
 		var returnType: TypeClause;
 		if (this.current().type != TT.BRACKET_LCURLY) {
 			returnType = this.parseTypeClause();
+		} else {
+			returnType = undefined as unknown as TypeClause; // TODO: void type
 		}
 
 		// Func: someFunc(a i32, b i32) bool { ... }

@@ -1,13 +1,10 @@
 import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
 import TypeClause from "../clauses/typeclause";
-import { NT } from "../nodetypes";
 import { ExpressionNode, StatementNode } from "../syntaxnode"
 
+// This do be a local statement
 export default class LocalStatement extends StatementNode {
-	
-	// This do be a local statement
-	NodeType: NT = NT.STATEMENT_LOCAL;
 
 	// local [<type>:] myVar [= 100];
 	LocalKeyword: Token;

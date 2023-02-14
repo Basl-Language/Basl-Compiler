@@ -1,14 +1,12 @@
 import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
 import ParameterClause from "../clauses/parameterclause";
-import { NT } from "../nodetypes";
+
 import { MemberNode } from "../syntaxnode";
 
+// mmm struct
 export default class StructMember extends MemberNode {
 
-	// mmm struct
-	NodeType: NT = NT.MEMBER_STRUCT;
-	
 	// if you think about it
 	// Struct: myStruct {
 	//		someField1 i32,	

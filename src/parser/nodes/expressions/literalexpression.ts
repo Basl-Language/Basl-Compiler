@@ -1,6 +1,6 @@
 import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
-import { NT } from "../nodetypes";
+
 import { ExpressionNode } from "../syntaxnode";
 
 export default class LiteralExpression extends ExpressionNode {

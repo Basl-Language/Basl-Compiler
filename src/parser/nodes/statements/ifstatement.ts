@@ -1,13 +1,10 @@
 import { Source } from "../../../common/Source";
 import { Token } from "../../../lexer/tokens";
-import { NT } from "../nodetypes";
+
 import { ExpressionNode, StatementNode } from "../syntaxnode";
 
+// This is an if statement!
 export default class IfStatement extends StatementNode {
-
-	// This is an if statement!
-	NodeType: NT = NT.STATEMENT_IF;
-
 	// if { ... } [else { ... }]
 	IfKeyword: Token;
 	Condition: ExpressionNode;

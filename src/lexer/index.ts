@@ -45,7 +45,7 @@ export default class Lexer extends SrcObject {
       case '?':
         return new Token(TT.SYM_QUESTION, this._char);
       case ';':
-        return new Token(TT.SYM_SEMI_COLON, this._char);
+        return new Token(TT.SYM_SEMICOLON, this._char);
     }
 
     return new Token(TT.UNKNOWN, '');
@@ -116,8 +116,6 @@ export default class Lexer extends SrcObject {
         return new Token(TT.KW_NS, fullIdent);
       case 'while':
         return new Token(TT.KW_STRUCT, fullIdent);
-      case 'uhhhhhhhhhhhhhhhh':
-        return new Token(TT.KW_UHHHHHH, fullIdent);
     }
 
     return new Token(TT.IDENTIFIER, fullIdent);
