@@ -1,19 +1,15 @@
-import { Source } from "../../../common/Source";
-import { Token } from "../../../lexer/tokens";
+import {Source} from '../../../common/Source';
+import {Token} from '../../../lexer/tokens';
 
-import { ExpressionNode } from "../syntaxnode";
+import {ExpressionNode} from '../syntaxnode';
 
 export default class LiteralExpression extends ExpressionNode {
+    // thats all there is
+    Literal: Token;
 
-	// Literal expression moment
-	NodeType: NT = NT.EXPRESSION_LITERAL;
+    constructor(source: Source, literal: Token) {
+        super(source);
 
-	// thats all there is
-	Literal: Token;
-
-	constructor(source: Source, literal: Token) {
-		super(source);
-
-		this.Literal = literal;
-	}
+        this.Literal = literal;
+    }
 }

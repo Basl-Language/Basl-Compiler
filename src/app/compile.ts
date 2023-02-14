@@ -1,17 +1,20 @@
-import { privateEncrypt } from 'crypto';
+import {privateEncrypt} from 'crypto';
 import {createSourceObject} from '../common/Source';
 import Lexer from '../lexer';
 import {openFile} from '../utils';
+import { TT } from '../lexer/tokens';
 
 export default (path: string) => {
-  const content = openFile(path);
+    const content = openFile(path);
 
-  const source = createSourceObject(path, content);
-  const lexer = new Lexer(source);
+    const source = createSourceObject(path, content);
+    const lexer = new Lexer(source);
 
-  lexer.tokenize();
+    lexer.tokenize();
 
-  lexer.tokens.forEach(token => {
-    console.log(token.type+": "+token.value);
-  });
+    var tokenInfo: any[] = []
+    lexer.tokens.forEach(token => {
+        tokenInfo.push({'Token': TT[token.type], 'Value': token.value});
+    });
+    console.table(tokenInfo);
 };

@@ -1,15 +1,15 @@
-import { Source } from "../../../common/Source";
-import { Token } from "../../../lexer/tokens";
+import {Source} from '../../../common/Source';
+import {Token} from '../../../lexer/tokens';
 
-import { ExpressionNode } from "../syntaxnode";
+import {ExpressionNode} from '../syntaxnode';
 
 // This is a variable expression
 export default class VariableExpression extends ExpressionNode {
-	Identifier: Token;
+    Identifier: Token;
 
-	constructor(source: Source, id: Token) {
-		super(source);
+    constructor(source: Source, id: Token) {
+        super(source);
 
-		this.Identifier = id;
-	}
+        this.Identifier = id;
+    }
 }

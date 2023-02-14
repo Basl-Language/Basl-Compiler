@@ -1,20 +1,19 @@
-import { Source } from "../../../common/Source";
-import { Token } from "../../../lexer/tokens";
+import {Source} from '../../../common/Source';
+import {Token} from '../../../lexer/tokens';
 
-import { Node } from "../syntaxnode";
-import TypeClause from "./typeclause";
+import {Node} from '../syntaxnode';
+import TypeClause from './typeclause';
 
 /// @brief Node for a single parameter declaration
 export default class ParameterClause extends Node {
+    // Parameters are made out of just a name and a type
+    Identifier: Token;
+    Type: TypeClause;
 
-	// Parameters are made out of just a name and a type
-	Identifier: Token;
-	Type: TypeClause;
+    constructor(source: Source, id: Token, type: TypeClause) {
+        super(source);
 
-	constructor(source: Source, id: Token, type: TypeClause) {
-		super(source);
-
-		this.Identifier = id;
-		this.Type = type;
-	}
+        this.Identifier = id;
+        this.Type = type;
+    }
 }

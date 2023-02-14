@@ -1,17 +1,22 @@
-import { Token } from "../lexer/tokens";
-import { Source } from "./Source";
-import SrcObject from "./SrcObject";
+import {Token} from '../lexer/tokens';
+import {Source} from './Source';
+import SrcObject from './SrcObject';
 
 export default class DBGInfo extends SrcObject {
     public readonly width: number = 0;
     public readonly line: number = 0;
-    public readonly pos: [number, number] = [0,0];
+    public readonly pos: [number, number] = [0, 0];
 
-    public readonly line_before: string = "";
-    public readonly line_str: string = "";
-    public readonly line_after: string = "";
+    public readonly line_before: string = '';
+    public readonly line_str: string = '';
+    public readonly line_after: string = '';
 
-    constructor(src: Source, pos: [number, number] = [0,0], line: number = -1, width: number = 1) {
+    constructor(
+        src: Source,
+        pos: [number, number] = [0, 0],
+        line: number = -1,
+        width: number = 1
+    ) {
         super(src);
 
         this.pos = pos;

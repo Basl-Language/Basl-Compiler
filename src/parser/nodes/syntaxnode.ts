@@ -1,7 +1,6 @@
-
-import { Source } from "../../common/Source";
-import SrcObject from "../../common/SrcObject";
-import DBGSourced from "../../common/DBGSourced";
+import {Source} from '../../common/Source';
+import SrcObject from '../../common/SrcObject';
+import DBGSourced from '../../common/DBGSourced';
 
 // =============================================================================
 // Node base class, doesnt do shit, but is the base of everything else
@@ -18,7 +17,7 @@ export abstract class Node extends DBGSourced {
 
 /// @brief Base node for all members (functions, events, structs, etc...)
 export abstract class MemberNode extends Node {
-	constructor(src: Source) {
+    constructor(src: Source) {
         super(src);
     }
 }
@@ -28,7 +27,7 @@ export abstract class MemberNode extends Node {
 
 /// @brief Base node for all statements (if/else, for, while, etc...)
 export abstract class StatementNode extends Node {
-	constructor(src: Source) {
+    constructor(src: Source) {
         super(src);
     }
 }
@@ -38,7 +37,7 @@ export abstract class StatementNode extends Node {
 
 /// @brief Base node for all expressions (binary, unary, literals, etc...)
 export abstract class ExpressionNode extends Node {
-	constructor(src: Source) {
+    constructor(src: Source) {
         super(src);
     }
 }
