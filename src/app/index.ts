@@ -1,7 +1,8 @@
-import {Program} from './program';
+
+import program from "./program";
 
 const main = () => {
-  const p = new Program();
-};
+    program.parse();
+}
 
 main();
