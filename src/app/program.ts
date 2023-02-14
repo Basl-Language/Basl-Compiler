@@ -1,11 +1,18 @@
-
 import {
-	action, command, commandOption, description, option,
-	optionalArg, program, requiredArg, usage,
-	variadicArg, version,
-	Command
+  action,
+  command,
+  commandOption,
+  description,
+  option,
+  optionalArg,
+  program,
+  requiredArg,
+  usage,
+  variadicArg,
+  version,
+  Command,
 } from 'commander-ts';
-import { version as compilerVersion } from "../../package.json";
+import {version as compilerVersion} from '../../package.json';
 import compile from './compile';
 
 @program()
@@ -13,13 +20,12 @@ import compile from './compile';
 @description('A basic program')
 @usage('--help')
 export class Program {
-	@option('--env <env>')
-	env: string | null = null;
+  @option('--env <env>')
+  env: string | null = null;
 
-	constructor() {}
+  constructor() {}
 
-	run(@requiredArg('path') path: string) {
-		compile(path);
-	}
+  run(@requiredArg('path') path: string) {
+    compile(path);
+  }
 }
-

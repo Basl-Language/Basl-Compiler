@@ -1,12 +1,10 @@
-
-import { createSourceObject } from "../common/Source";
-import Lexer from "../lexer";
-import { openFile } from "../utils";
+import {createSourceObject} from '../common/Source';
+import Lexer from '../lexer';
+import {openFile} from '../utils';
 
 export default (path: string) => {
+  const content = openFile(path);
 
-    let content = openFile(path);
-
-    let source = createSourceObject(path, content);
-    let lexer = new Lexer(source);
-}
+  const source = createSourceObject(path, content);
+  const lexer = new Lexer(source);
+};

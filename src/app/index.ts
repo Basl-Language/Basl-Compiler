@@ -1,8 +1,7 @@
-
-import { Program } from "./program";
+import {Program} from './program';
 
 const main = () => {
-    let p = new Program();
-}
+  const p = new Program();
+};
 
 main();
