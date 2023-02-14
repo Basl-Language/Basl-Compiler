@@ -1,3 +1,4 @@
+
 import { program } from "commander";
 import { version } from "../../package.json";
 import compile from "./compile";
@@ -10,4 +11,3 @@ export default program
 	.action((path: string) => {
 		compile(path)
 	});
-
