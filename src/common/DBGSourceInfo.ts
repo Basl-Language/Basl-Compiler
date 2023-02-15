@@ -14,8 +14,8 @@ export default class DBGInfo extends SrcObject {
     constructor(
         src: Source,
         pos: [number, number] = [0, 0],
-        line: number = -1,
-        width: number = 1
+        line = -1,
+        width = 1
     ) {
         super(src);
 

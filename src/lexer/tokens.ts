@@ -105,8 +105,7 @@ export class Token {
         this._value = value;
 
         this.pos = pos;
-        this.width = width === -1
-            ? value.length : width;
+        this.width = width === -1 ? value.length : width;
     }
 
     public get type(): TT {

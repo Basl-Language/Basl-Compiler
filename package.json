@@ -7,7 +7,8 @@
         "fix": "gts fix",
         "prepare": "npm run compile",
         "pretest": "npm run compile",
-        "posttest": "npm run lint"
+        "posttest": "npm run lint",
+        "format": "prettier --write ."
     },
     "//": [
         "This is the main repo for the language",

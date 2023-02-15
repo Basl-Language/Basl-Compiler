@@ -28,7 +28,7 @@ import {ExpressionNode, MemberNode, StatementNode} from './nodes/syntaxnode';
 
 export default class extends /* Parser */ SrcObject {
     private _tokens: Token[];
-    private _index: number = 0;
+    private _index = 0;
 
     constructor(src: Source, tokens: Token[]) {
         super(src);
@@ -47,7 +47,7 @@ export default class extends /* Parser */ SrcObject {
     private peek(offset: number): Token {
         // make sure this index is still valid
         if (this._index + offset >= this._tokens.length) {
-            return new Token(TT.EOF, [-1,-1], '<EOF>');
+            return new Token(TT.EOF, [-1, -1], '<EOF>');
         }
 
         // we good fam
@@ -75,7 +75,7 @@ export default class extends /* Parser */ SrcObject {
 
     /// @brief Turns a list of tokens into a list of members in the global scope
     public parse(): MemberNode[] {
-        var members: MemberNode[] = [];
+        const members: MemberNode[] = [];
 
         while (this.current().type != TT.EOF) {
             members.push(this.parseMember());
@@ -126,17 +126,17 @@ export default class extends /* Parser */ SrcObject {
 
     private parseEntryMember(): EntryMember {
         // Parse the context
-        var entryKw: Token = this.consume(TT.KW_ENTRY);
+        const entryKw: Token = this.consume(TT.KW_ENTRY);
         this.consume(TT.SYM_COLON);
 
         // Parse entry point name
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
 
         // Parse parameters
         // Entry: main(args [string]) { ... }
         //            ^^^^^^^^^^^^^^
         this.consume(TT.BRACKET_LPARENT); // (
-        var parameters: ParameterClause[] = this.parseParameterList();
+        const parameters: ParameterClause[] = this.parseParameterList();
         this.consume(TT.BRACKET_RPARENT); // )
 
         // the main entry point does not have a return value
@@ -145,7 +145,7 @@ export default class extends /* Parser */ SrcObject {
 
         // Entry: main(args [string]) { ... }
         //                            ^^^^^^^
-        var body: BlockStatement = this.parseBlockStatement();
+        const body: BlockStatement = this.parseBlockStatement();
 
         return new EntryMember(
             this._source,
@@ -158,23 +158,23 @@ export default class extends /* Parser */ SrcObject {
 
     private parseFuncMember(): FuncMember {
         // Parse the context
-        var funcKw: Token = this.consume(TT.KW_FUNC);
+        const funcKw: Token = this.consume(TT.KW_FUNC);
         this.consume(TT.SYM_COLON);
 
         // Parse function name
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
 
         // Parse parameters
         // Func: someFunc(a i32, b i32) bool { ... }
         //               ^^^^^^^^^^^^^
         this.consume(TT.BRACKET_LPARENT); // (
-        var parameters: ParameterClause[] = this.parseParameterList();
+        const parameters: ParameterClause[] = this.parseParameterList();
         this.consume(TT.BRACKET_RPARENT); // )
 
         // If there is one, parse a return type
         // Func: someFunc(a i32, b i32) bool { ... }
         //                              ^^^^
-        var returnType: TypeClause;
+        let returnType: TypeClause;
         if (this.current().type != TT.BRACKET_LCURLY) {
             returnType = this.parseTypeClause();
         } else {
@@ -183,7 +183,7 @@ export default class extends /* Parser */ SrcObject {
 
         // Func: someFunc(a i32, b i32) bool { ... }
         //                                   ^^^^^^^
-        var body: BlockStatement = this.parseBlockStatement();
+        const body: BlockStatement = this.parseBlockStatement();
 
         return new FuncMember(
             this._source,
@@ -197,17 +197,17 @@ export default class extends /* Parser */ SrcObject {
 
     private parseEventMember(): EventMember {
         // Parse the context
-        var eventKw: Token = this.consume(TT.KW_EVENT);
+        const eventKw: Token = this.consume(TT.KW_EVENT);
         this.consume(TT.SYM_COLON);
 
         // Parse event name
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
 
         // Parse parameters
         // Event: someCallback(someData <Data>) { ... }
         //                    ^^^^^^^^^^^^^^^^
         this.consume(TT.BRACKET_LPARENT); // (
-        var parameters: ParameterClause[] = this.parseParameterList();
+        const parameters: ParameterClause[] = this.parseParameterList();
         this.consume(TT.BRACKET_RPARENT); // )
 
         // events currently dont return stuff, they are supposed to take data
@@ -215,7 +215,7 @@ export default class extends /* Parser */ SrcObject {
 
         // Event: someCallback(someData <Data>) { ... }
         //                                      ^^^^^^^
-        var body: BlockStatement = this.parseBlockStatement();
+        const body: BlockStatement = this.parseBlockStatement();
 
         return new EventMember(
             this._source,
@@ -228,14 +228,14 @@ export default class extends /* Parser */ SrcObject {
 
     private parseStructMember(): StructMember {
         // Parse the context
-        var structKw: Token = this.consume(TT.KW_STRUCT);
+        const structKw: Token = this.consume(TT.KW_STRUCT);
         this.consume(TT.SYM_COLON);
 
         // Parse the struct name
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
 
         this.consume(TT.BRACKET_LCURLY); // {
-        var fields: ParameterClause[] = this.parseParameterList();
+        const fields: ParameterClause[] = this.parseParameterList();
         this.consume(TT.BRACKET_RCURLY); // }
 
         return new StructMember(this._source, structKw, identifier, fields);
@@ -243,30 +243,30 @@ export default class extends /* Parser */ SrcObject {
 
     private parseMethodMember(): MethodMember {
         // Parse the context
-        var baseStruct: Token = this.consume(TT.IDENTIFIER);
+        const baseStruct: Token = this.consume(TT.IDENTIFIER);
         this.consume(TT.SYM_COLON);
 
         // Parse function name
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
 
         // Parse parameters
         // someStruct: someFunc(a i32, b i32) bool { ... }
         //                     ^^^^^^^^^^^^^
         this.consume(TT.BRACKET_LPARENT); // (
-        var parameters: ParameterClause[] = this.parseParameterList();
+        const parameters: ParameterClause[] = this.parseParameterList();
         this.consume(TT.BRACKET_RPARENT); // )
 
         // If there is one, parse a return type
         // someStruct: someFunc(a i32, b i32) bool { ... }
         //                                    ^^^^
-        var returnType: TypeClause | null = null;
+        let returnType: TypeClause | null = null;
         if (this.current().type != TT.BRACKET_LCURLY) {
             returnType = this.parseTypeClause();
         }
 
         // Func: someFunc(a i32, b i32) bool { ... }
         //                                   ^^^^^^^
-        var body: BlockStatement = this.parseBlockStatement();
+        const body: BlockStatement = this.parseBlockStatement();
 
         return new MethodMember(
             this._source,
@@ -283,17 +283,17 @@ export default class extends /* Parser */ SrcObject {
     // -------------------------------------------------------------------------
     private parseParameterClause(): ParameterClause {
         // Parameter name
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
 
         // Parameter type
-        var type: TypeClause = this.parseTypeClause();
+        const type: TypeClause = this.parseTypeClause();
 
         return new ParameterClause(this._source, identifier, type);
     }
 
     private parseParameterList(): ParameterClause[] {
         // list of all our parameters
-        var parameters: ParameterClause[] = [];
+        const parameters: ParameterClause[] = [];
 
         // loop for as long as we find enough commas to keep us happy
         while (this.current().type != TT.EOF) {
@@ -335,7 +335,7 @@ export default class extends /* Parser */ SrcObject {
         }
 
         // Boring types!
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
         return new TypeClause(this._source, identifier, false, false, null);
     }
 
@@ -343,7 +343,7 @@ export default class extends /* Parser */ SrcObject {
     // Statements
     // -------------------------------------------------------------------------
     private parseStatement(): StatementNode {
-        var statement: StatementNode;
+        let statement: StatementNode;
 
         switch (this.current().type) {
             // These statements should not expect a semicolon
@@ -385,7 +385,7 @@ export default class extends /* Parser */ SrcObject {
         // {
         this.consume(TT.BRACKET_LCURLY);
 
-        var statements: StatementNode[] = [];
+        const statements: StatementNode[] = [];
 
         // collect statements until we hit a closing brace or end of file
         while (
@@ -402,12 +402,12 @@ export default class extends /* Parser */ SrcObject {
     }
 
     private parseIfStatement(): IfStatement {
-        var ifKw: Token = this.consume(TT.KW_IF);
-        var condition: ExpressionNode = this.parseExpression();
-        var thenStmt: StatementNode = this.parseStatement();
+        const ifKw: Token = this.consume(TT.KW_IF);
+        const condition: ExpressionNode = this.parseExpression();
+        const thenStmt: StatementNode = this.parseStatement();
 
         // optional else statement
-        var elseStmt: StatementNode | null = null;
+        let elseStmt: StatementNode | null = null;
         if (this.current().type == TT.KW_ELSE) {
             this.consume(TT.KW_ELSE);
             elseStmt = this.parseStatement();
@@ -423,21 +423,21 @@ export default class extends /* Parser */ SrcObject {
     }
 
     private parseWhileStatement(): WhileStatement {
-        var whileKw: Token = this.consume(TT.KW_WHILE);
-        var condition: ExpressionNode = this.parseExpression();
-        var loopStmt: StatementNode = this.parseStatement();
+        const whileKw: Token = this.consume(TT.KW_WHILE);
+        const condition: ExpressionNode = this.parseExpression();
+        const loopStmt: StatementNode = this.parseStatement();
 
         return new WhileStatement(this._source, whileKw, condition, loopStmt);
     }
 
     private parseForStatement(): ForStatement {
-        var forKw: Token = this.consume(TT.KW_FOR);
+        const forKw: Token = this.consume(TT.KW_FOR);
 
-        var initializer: StatementNode = this.parseStatement();
-        var condition: ExpressionNode = this.parseExpression();
-        var step: StatementNode = this.parseStatement();
+        const initializer: StatementNode = this.parseStatement();
+        const condition: ExpressionNode = this.parseExpression();
+        const step: StatementNode = this.parseStatement();
 
-        var loopStmt: StatementNode = this.parseStatement();
+        const loopStmt: StatementNode = this.parseStatement();
 
         return new ForStatement(
             this._source,
@@ -450,12 +450,12 @@ export default class extends /* Parser */ SrcObject {
     }
 
     private parseForeachStatement(): ForeachStatement {
-        var foreachKw: Token = this.consume(TT.KW_FOREACH);
-        var iterator: Token = this.consume(TT.IDENTIFIER);
+        const foreachKw: Token = this.consume(TT.KW_FOREACH);
+        const iterator: Token = this.consume(TT.IDENTIFIER);
 
         this.consume(TT.KW_IN);
 
-        var iterationSource: ExpressionNode = this.parseExpression();
+        const iterationSource: ExpressionNode = this.parseExpression();
 
         return new ForeachStatement(
             this._source,
@@ -466,11 +466,11 @@ export default class extends /* Parser */ SrcObject {
     }
 
     private parseLocalStatement(): LocalStatement {
-        var localKw: Token = this.consume(TT.KW_LOCAL);
+        const localKw: Token = this.consume(TT.KW_LOCAL);
 
         // is there a datatype given for this variable?
         // local [type:] myVar [= 100];
-        var explicitType: TypeClause | null = null;
+        let explicitType: TypeClause | null = null;
         if (
             this.peek(1).type != TT.OP_EQ &&
             this.peek(1).type != TT.SYM_SEMICOLON
@@ -480,10 +480,10 @@ export default class extends /* Parser */ SrcObject {
         }
 
         // whats this variable called?
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
 
         // do we have an initializer?
-        var initializer: ExpressionNode | null = null;
+        let initializer: ExpressionNode | null = null;
         if (this.current().type == TT.OP_EQ) {
             this.consume(TT.OP_EQ);
             initializer = this.parseExpression();
@@ -502,16 +502,16 @@ export default class extends /* Parser */ SrcObject {
         this.consume(TT.OP_ARROW);
 
         // Parse the return value, if we've got one
-        var returnValue: ExpressionNode|null = null;
+        let returnValue: ExpressionNode | null = null;
         if (this.current().type != TT.SYM_SEMICOLON) {
             returnValue = this.parseExpression();
         }
-        
+
         return new ReturnStatement(this._source, returnValue);
     }
 
     private parseExpressionStatement(): ExpressionStatement {
-        var expression: ExpressionNode = this.parseExpression();
+        const expression: ExpressionNode = this.parseExpression();
         return new ExpressionStatement(this._source, expression);
     }
 
@@ -525,13 +525,11 @@ export default class extends /* Parser */ SrcObject {
         return this.parseBinaryExpression();
     }
 
-    private parseBinaryExpression(
-        parentPrecendence: number = 0
-    ): ExpressionNode {
-        var left: ExpressionNode;
+    private parseBinaryExpression(parentPrecendence = 0): ExpressionNode {
+        let left: ExpressionNode;
 
         // okay but like, is this actually a unary expression?
-        var unaryPrecedence: number = Operators.getUnaryOperatorPrecedence(
+        const unaryPrecedence: number = Operators.getUnaryOperatorPrecedence(
             this.current().type
         );
         if (unaryPrecedence != 0 && unaryPrecedence > parentPrecendence) {
@@ -539,7 +537,7 @@ export default class extends /* Parser */ SrcObject {
             var operator: Token = this.consume(this.current().type);
 
             // then the expression
-            var operand: ExpressionNode =
+            const operand: ExpressionNode =
                 this.parseBinaryExpression(unaryPrecedence);
 
             // done
@@ -551,7 +549,7 @@ export default class extends /* Parser */ SrcObject {
         left = this.parsePrimaryExpression();
 
         while (true) {
-            var precedence: number = Operators.getBinaryOperatorPrecedence(
+            const precedence: number = Operators.getBinaryOperatorPrecedence(
                 this.current().type
             );
 
@@ -562,7 +560,8 @@ export default class extends /* Parser */ SrcObject {
 
             // parse both operator and the other side of the expression
             var operator: Token = this.consume(this.current().type);
-            var right: ExpressionNode = this.parseBinaryExpression(precedence);
+            const right: ExpressionNode =
+                this.parseBinaryExpression(precedence);
 
             // move all this to the left side and start again
             left = new BinaryExpression(this._source, left, operator, right);
@@ -584,7 +583,7 @@ export default class extends /* Parser */ SrcObject {
                 if (this.peek(1).type == TT.BRACKET_LPARENT) {
                     return this.parseCallExpression();
                 } else if (this.peek(1).type == TT.OP_EQ) {
-                    return this.parseAssignmentExpression(); 
+                    return this.parseAssignmentExpression();
                 } else {
                     return this.parseVariableExpression();
                 }
@@ -600,19 +599,19 @@ export default class extends /* Parser */ SrcObject {
 
     private parseLiteralExpression(): LiteralExpression {
         // just consume the next token we got
-        var value: Token = this.consume(this.current().type);
+        const value: Token = this.consume(this.current().type);
 
         return new LiteralExpression(this._source, value);
     }
 
     private parseCallExpression(): CallExpression {
         // what are we calling?
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
 
         this.consume(TT.BRACKET_LPARENT);
 
         // what are we calling with?
-        var args: ExpressionNode[] = [];
+        const args: ExpressionNode[] = [];
         while (
             this.current().type != TT.EOF &&
             this.current().type != TT.BRACKET_RPARENT
@@ -634,17 +633,17 @@ export default class extends /* Parser */ SrcObject {
 
     private parseVariableExpression(): VariableExpression {
         // just a variable name
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
         return new VariableExpression(this._source, identifier);
     }
 
     private parseAssignmentExpression(): AssignmentExpression {
         // the variable name
-        var identifier: Token = this.consume(TT.IDENTIFIER);
+        const identifier: Token = this.consume(TT.IDENTIFIER);
         this.consume(TT.OP_EQ);
 
         // the value we're storing
-        var value: ExpressionNode = this.parseExpression();
+        const value: ExpressionNode = this.parseExpression();
 
         return new AssignmentExpression(this._source, identifier, value);
     }
@@ -654,7 +653,7 @@ export default class extends /* Parser */ SrcObject {
         dbg: DBGSourceInfo | undefined = undefined,
         ...args: any[]
     ) {
-        let n = new type(...args) as any;
+        const n = new type(...args) as any;
 
         if (typeof dbg === 'undefined') {
             dbg = DBGSourceInfo.fromToken(this._source, this.current());

@@ -17,8 +17,6 @@ export default class {
     public static getBinaryOperatorPrecedence(t: TT) {
         // TODO: someone fill this in please
         switch (t) {
-            
-
             case TT.OP_EQEQ:
             case TT.OP_MUL:
             case TT.OP_DIV:
