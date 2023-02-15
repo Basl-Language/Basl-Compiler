@@ -1,3 +1,4 @@
+import { maxHeaderSize } from 'http';
 import {Source} from '../common/Source';
 import SrcObject from '../common/SrcObject';
 import {Token} from './tokens';
@@ -29,7 +30,7 @@ export default class Lexer extends SrcObject {
         this._char = this._source.content[this._index++];
     }
 
-    private peek(offset: number = 1): string {
+    private peek(offset: number = 0): string {
         // Is this still valid?
         if (this._index + offset >= this._source.content.length) {
             // null character will function as EOF
@@ -48,7 +49,7 @@ export default class Lexer extends SrcObject {
     }
 
     public isSpecial(x: string): boolean {
-        var format = /[ `!@#$%^&*()_+\-=\[\]{};':\\|,.<>\/?~]/;
+        var format = /[`!@#$%^&*()_+\-=\[\]{};':\\|,.<>\/?~]/;
         return format.test(x);
     }
 
@@ -57,7 +58,8 @@ export default class Lexer extends SrcObject {
     // ===========================================================================
 
     public tokenize() {
-        while (this._index < this._source.content.length) {
+        while (this._char != '\0') {
+
             // Is this a whitespace character? -> Skip
             if (/\s/.test(this._char)) {
                 this.next();
@@ -294,8 +296,8 @@ export default class Lexer extends SrcObject {
     public collectIdentifier(): Token {
         let fullIdent = ''; // Identifier / Keyword buffer
 
-        // Loop for as long as we find letters (EOF safe)
-        while (this.isLetter(this._char)) {
+        // Loop for as long as we find letters, numbers or _ (EOF safe)
+        while (this.isLetter(this._char) || !isNaN(parseInt(this._char)) || this._char == '_') {
             fullIdent += this._char;
             this.next();
         }

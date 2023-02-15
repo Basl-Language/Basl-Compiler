@@ -4,6 +4,7 @@ import SrcObject from '../common/SrcObject';
 import {Token, TT} from '../lexer/tokens';
 import ParameterClause from './nodes/clauses/parameterclause';
 import TypeClause from './nodes/clauses/typeclause';
+import AssignmentExpression from './nodes/expressions/assignmenexpression';
 import BinaryExpression from './nodes/expressions/binaryexpression';
 import CallExpression from './nodes/expressions/callexpression';
 import LiteralExpression from './nodes/expressions/literalexpression';
@@ -21,6 +22,7 @@ import ForeachStatement from './nodes/statements/foreachstatement';
 import ForStatement from './nodes/statements/forstatement';
 import IfStatement from './nodes/statements/ifstatement';
 import LocalStatement from './nodes/statements/localstatement';
+import ReturnStatement from './nodes/statements/returnstatement';
 import WhileStatement from './nodes/statements/whilestatement';
 import {ExpressionNode, MemberNode, StatementNode} from './nodes/syntaxnode';
 
@@ -56,8 +58,8 @@ export default class extends /* Parser */ SrcObject {
         // is this the token we're looking for?
         if (this.current().type != tokenType) {
             throw new Error(
-                `Wow sucks to be you! Expected ${tokenType} but got ${
-                    this.current().type
+                `Wow sucks to be you! Expected ${TT[tokenType]} but got ${
+                    TT[this.current().type]
                 }!`
             );
         }
@@ -117,7 +119,7 @@ export default class extends /* Parser */ SrcObject {
         // welp looks like you lost
         throw new Error(
             `Wow sucks to be you! Expected MemberNode but got ${
-                this.current().type
+                TT[this.current().type]
             }!`
         );
     }
@@ -365,6 +367,10 @@ export default class extends /* Parser */ SrcObject {
                 statement = this.parseLocalStatement();
                 break;
 
+            case TT.OP_ARROW:
+                statement = this.parseReturnStatement();
+                break;
+
             default:
                 statement = this.parseExpressionStatement();
                 break;
@@ -492,6 +498,18 @@ export default class extends /* Parser */ SrcObject {
         );
     }
 
+    private parseReturnStatement(): ReturnStatement {
+        this.consume(TT.OP_ARROW);
+
+        // Parse the return value, if we've got one
+        var returnValue: ExpressionNode|null = null;
+        if (this.current().type != TT.SYM_SEMICOLON) {
+            returnValue = this.parseExpression();
+        }
+        
+        return new ReturnStatement(this._source, returnValue);
+    }
+
     private parseExpressionStatement(): ExpressionStatement {
         var expression: ExpressionNode = this.parseExpression();
         return new ExpressionStatement(this._source, expression);
@@ -565,6 +583,8 @@ export default class extends /* Parser */ SrcObject {
             case TT.IDENTIFIER:
                 if (this.peek(1).type == TT.BRACKET_LPARENT) {
                     return this.parseCallExpression();
+                } else if (this.peek(1).type == TT.OP_EQ) {
+                    return this.parseAssignmentExpression(); 
                 } else {
                     return this.parseVariableExpression();
                 }
@@ -572,7 +592,7 @@ export default class extends /* Parser */ SrcObject {
             default:
                 throw new Error(
                     `Wow sucks to be you i guess. Expected an expression but got ${
-                        this.current().type
+                        TT[this.current().type]
                     }`
                 );
         }
@@ -616,6 +636,17 @@ export default class extends /* Parser */ SrcObject {
         // just a variable name
         var identifier: Token = this.consume(TT.IDENTIFIER);
         return new VariableExpression(this._source, identifier);
+    }
+
+    private parseAssignmentExpression(): AssignmentExpression {
+        // the variable name
+        var identifier: Token = this.consume(TT.IDENTIFIER);
+        this.consume(TT.OP_EQ);
+
+        // the value we're storing
+        var value: ExpressionNode = this.parseExpression();
+
+        return new AssignmentExpression(this._source, identifier, value);
     }
 
     private newNode<T extends any>(

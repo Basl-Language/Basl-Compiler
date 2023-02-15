@@ -14,3 +14,9 @@ Func: isEqual(a i32, b i32) bool {
 		=> false;
 	}
 }
+
+Func: doSomething(doNothing bool) {
+	if doNothing {
+		=> ;
+	}
+}
