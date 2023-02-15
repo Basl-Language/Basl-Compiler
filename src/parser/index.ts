@@ -47,7 +47,7 @@ export default class extends /* Parser */ SrcObject {
     private peek(offset: number): Token {
         // make sure this index is still valid
         if (this._index + offset >= this._tokens.length) {
-            return new Token(TT.EOF);
+            return new Token(TT.EOF, [-1,-1], '<EOF>');
         }
 
         // we good fam

@@ -100,9 +100,13 @@ export class Token {
     public readonly pos: [number, number] = [-1, -1];
     public readonly width: number = 1;
 
-    constructor(t: TT, value = '<unknown>') {
+    constructor(t: TT, pos: [number, number], value = '<unknown>', width = -1) {
         this._type = t;
         this._value = value;
+
+        this.pos = pos;
+        this.width = width === -1
+            ? value.length : width;
     }
 
     public get type(): TT {

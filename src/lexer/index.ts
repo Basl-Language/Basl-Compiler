@@ -10,6 +10,9 @@ export default class Lexer extends SrcObject {
     private _index = 0;
     private _char = '';
 
+    private _line = 0;
+    private _col  = 0;
+
     constructor(src: Source) {
         super(src);
     }
@@ -19,6 +22,9 @@ export default class Lexer extends SrcObject {
     // ===========================================================================
 
     private next(): void {
+
+        if (this._char === '\n') { this._line++; this._col = 0; }
+        else { this._col++; }
         // Is this still valid?
         if (this._index >= this._source.content.length) {
             // null character will function as EOF
@@ -44,11 +50,11 @@ export default class Lexer extends SrcObject {
     // ---------------------------------------------------------------------------
     // Character classification helpers
     // ---------------------------------------------------------------------------
-    public isLetter(c: string): boolean {
+    private isLetter(c: string): boolean {
         return /[A-Za-z]/i.test(c);
     }
 
-    public isSpecial(x: string): boolean {
+    private isSpecial(x: string): boolean {
         var format = /[`!@#$%^&*()_+\-=\[\]{};':\\|,.<>\/?~]/;
         return format.test(x);
     }
@@ -92,22 +98,39 @@ export default class Lexer extends SrcObject {
         }
     }
 
-    public collectString(): Token {
+    private collectString(): Token {
         let fullStr = ''; // buffer to store our string into
 
         // Loop for as long as we dont hit a closing " or the end of file
         while (this._char != '\0' && this._char != '"') {
-            fullStr += this._char;
+            if (this._char === "\\") {
+                let c = this.peek();
+                switch (c) {
+                    case '\0': throw new TypeError(
+                        'A floating-point number can only have one decimal point.'
+                    );
+
+                    case '\\': fullStr += '\\'; this.next(); break;
+                    case '\'': fullStr += '\''; this.next(); break;
+                    case 't': fullStr += '\t';  this.next(); break;
+                    case 'n': fullStr += '"';   this.next(); break;
+                    case '"': fullStr += '\n';  this.next(); break;
+                    case 't': fullStr += '\t';  this.next(); break;
+                    case 'r': fullStr += '\r';  this.next(); break;
+                    case '\n': fullStr += '\n';  this.next(); break;
+
+                }
+            }
             this.next();
         }
 
         // collect trailing "
         this.next();
 
-        return new Token(TT.VALUE_STRING, fullStr);
+        return this.newToken(TT.VALUE_STRING, fullStr, fullStr.length);
     }
 
-    public collectNumber(): Token {
+    private collectNumber(): Token {
         let fullNumStr = ''; // Number buffer
         let isFloat = false; // Float flag
 
@@ -128,172 +151,178 @@ export default class Lexer extends SrcObject {
             this.next();
         }
 
-        return new Token(TT.VALUE_NUMBER, fullNumStr);
+        return this.newToken(TT.VALUE_NUMBER, fullNumStr, fullNumStr.length);
     }
 
-    public collectSymbol(): Token {
+    private newToken(ty: TT, value: string = this._char, width: number = -1) {
+        let pos: [number, number] = [this._line, this._col - (width === -1 ? 0 : (width+1))];
+        return new Token(ty, pos, value, width);
+    }
+
+    private collectSymbol(): Token {
 
         // Identify which symbol this is
         switch (this._char) {
 
             // Symbols
             // -------
-            case '@': return new Token(TT.SYM_AT, this._char);
-            case '.': return new Token(TT.SYM_DOT, this._char);
-            case '#': return new Token(TT.SYM_HASH, this._char);
-            case ',': return new Token(TT.SYM_COMMA, this._char);
+            case '@': return this.newToken(TT.SYM_AT);
+            case '.': return this.newToken(TT.SYM_DOT);
+            case '#': return this.newToken(TT.SYM_HASH);
+            case ',': return this.newToken(TT.SYM_COMMA);
             
             case ':' :
                 if (this.peek() == ':') {
                     this.next();
-                    return new Token(TT.SYM_COLCOL, '::');
+                    return this.newToken(TT.SYM_COLCOL, '::');
                 } 
 
-                return new Token(TT.SYM_COLON, this._char);
+                return this.newToken(TT.SYM_COLON);
 
-            case '$': return new Token(TT.SYM_DOLLAR, this._char);
-            case '?': return new Token(TT.SYM_QUESTION, this._char);
-            case ';': return new Token(TT.SYM_SEMICOLON, this._char);
+            case '$': return this.newToken(TT.SYM_DOLLAR);
+            case '?': return this.newToken(TT.SYM_QUESTION);
+            case ';': return this.newToken(TT.SYM_SEMICOLON);
 
             // Brackets
             // --------
-            case '(': return new Token(TT.BRACKET_LPARENT, this._char);
-            case '{': return new Token(TT.BRACKET_LCURLY, this._char);
-            case '[': return new Token(TT.BRACKET_LSQUARED, this._char);
+            case '(': return this.newToken(TT.BRACKET_LPARENT);
+            case '{': return this.newToken(TT.BRACKET_LCURLY);
+            case '[': return this.newToken(TT.BRACKET_LSQUARED);
 
-            case ')': return new Token(TT.BRACKET_RPARENT, this._char);
-            case '}': return new Token(TT.BRACKET_RCURLY, this._char);
-            case ']': return new Token(TT.BRACKET_RSQUARED, this._char);
+            case ')': return this.newToken(TT.BRACKET_RPARENT);
+            case '}': return this.newToken(TT.BRACKET_RCURLY);
+            case ']': return this.newToken(TT.BRACKET_RSQUARED);
 
             // Operators (Big and smol)
             // ------------------------
             case '*':
                 if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_MULEQ, '*=');
+                    return this.newToken(TT.OP_MULEQ, '*=');
                 } 
 
-                return new Token(TT.OP_MUL, this._char);
+                return this.newToken(TT.OP_MUL);
 
             case '%': 
                 if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_MOD_EQ, '%=');
+                    return this.newToken(TT.OP_MOD_EQ, '%=');
                 } 
 
-                return new Token(TT.OP_MOD, this._char);
+                return this.newToken(TT.OP_MOD);
 
             case '/': 
                 if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_DIVEQ, '/=');
+                    return this.newToken(TT.OP_DIVEQ, '/=');
                 } 
                 
-                return new Token(TT.OP_DIV, this._char);
+                return this.newToken(TT.OP_DIV);
 
             case '+': 
                 if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_PLUSEQ, '+=');
+                    return this.newToken(TT.OP_PLUSEQ, '+=');
                 } 
                 
-                return new Token(TT.OP_PLUS, this._char);
+                return this.newToken(TT.OP_PLUS);
 
             case '-':
                 if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_MINUSEQ, '-=');
+                    return this.newToken(TT.OP_MINUSEQ, '-=');
                 } 
 
-                return new Token(TT.OP_MINUS, this._char);
+                return this.newToken(TT.OP_MINUS);
 
             case '<': 
                 if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_LTEQ, '<=');
+                    return this.newToken(TT.OP_LTEQ, '<=');
                 } else if (this.peek() == '<' && this.peek(2) == '=') {
                     this.next();
                     this.next();
-                    return new Token(TT.OP_BIT_LSHIFT_EQ, "<<=");
+                    return this.newToken(TT.OP_BIT_LSHIFT_EQ, "<<=");
                 } else if (this.peek() == '<') {
                     this.next();
-                    return new Token(TT.OP_BIT_LSHIFT, "<<");
+                    return this.newToken(TT.OP_BIT_LSHIFT, "<<");
                 }
 
-                return new Token(TT.OP_LT, this._char);
+                return this.newToken(TT.OP_LT);
 
             case '>': 
                 if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_GTEQ, '>=');
+                    return this.newToken(TT.OP_GTEQ, '>=');
                 } else if (this.peek() == '>' && this.peek(2) == '=') {
                     this.next();
                     this.next();
-                    return new Token(TT.OP_BIT_RSHIFT_EQ, ">>=");
+                    return this.newToken(TT.OP_BIT_RSHIFT_EQ, ">>=");
                 } else if (this.peek() == '>') {
                     this.next();
-                    return new Token(TT.OP_BIT_RSHIFT, ">>");
+                    return this.newToken(TT.OP_BIT_RSHIFT, ">>");
                 }
 
-                return new Token(TT.OP_GT, this._char);
+                return this.newToken(TT.OP_GT);
 
             case '=':
                 if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_EQEQ, '==');
+                    return this.newToken(TT.OP_EQEQ, '==');
                 } else if (this.peek() == '>') {
                     this.next();
-                    return new Token(TT.OP_ARROW, '=>');
+                    return this.newToken(TT.OP_ARROW, '=>');
                 }
 
-                return new Token(TT.OP_EQ, this._char);
+                return this.newToken(TT.OP_EQ);
 
             case '!':
                 if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_NOTEQ, '!=');
+                    return this.newToken(TT.OP_NOTEQ, '!=');
                 }
 
-                return new Token(TT.OP_NOT, this._char);
+                return this.newToken(TT.OP_NOT);
 
             case '&':
                 if (this.peek() == '&') {
                     this.next();
-                    return new Token(TT.OP_AND, '&&');
+                    return this.newToken(TT.OP_AND, '&&');
                 } else if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_BIT_AND_EQ, '&=');
+                    return this.newToken(TT.OP_BIT_AND_EQ, '&=');
                 }
 
-                return new Token(TT.OP_BIT_AND, this._char);
+                return this.newToken(TT.OP_BIT_AND);
 
             case '|':
                 if (this.peek() == '|') {
                     this.next();
-                    return new Token(TT.OP_OR, '||');
+                    return this.newToken(TT.OP_OR, '||');
                 } else if (this.peek() == '=') {
                     this.next();
-                    return new Token(TT.OP_BIT_OR_EQ, '|=');
+                    return this.newToken(TT.OP_BIT_OR_EQ, '|=');
                 }
 
-                return new Token(TT.OP_BIT_OR, this._char);
+                return this.newToken(TT.OP_BIT_OR);
 
             case '^':
                 if (this.peek() == "=") {
                     this.next();
-                    return new Token(TT.OP_BIT_XOR_EQ, '^=');
+                    return this.newToken(TT.OP_BIT_XOR_EQ, '^=');
                 }
 
-                return new Token(TT.OP_BIT_XOR, this._char);
+                return this.newToken(TT.OP_BIT_XOR);
 
-            case '~': return new Token(TT.OP_BIT_NOT, this._char);
+            case '~': return this.newToken(TT.OP_BIT_NOT);
         }
 
         // Aight, no clue
-        return new Token(TT.UNKNOWN, '');
+        // TODO: throw error? Undefined character
+        return this.newToken(TT.UNKNOWN, '');
   }
 
-    public collectIdentifier(): Token {
+    private collectIdentifier(): Token {
         let fullIdent = ''; // Identifier / Keyword buffer
 
         // Loop for as long as we find letters, numbers or _ (EOF safe)
@@ -306,42 +335,42 @@ export default class Lexer extends SrcObject {
         switch (fullIdent) {
             case 'Func':
             case 'func':
-                return new Token(TT.KW_FUNC, fullIdent);
+                return this.newToken(TT.KW_FUNC, fullIdent, fullIdent.length);
 
             case 'Event':
             case 'event':
-                return new Token(TT.KW_EVENT, fullIdent);
+                return this.newToken(TT.KW_EVENT, fullIdent, fullIdent.length);
 
             case 'Entry':
             case 'entry':
-                return new Token(TT.KW_ENTRY, fullIdent);
+                return this.newToken(TT.KW_ENTRY, fullIdent, fullIdent.length);
 
             case 'Namespace':
             case 'namespace':
-                return new Token(TT.KW_NS, fullIdent);
+                return this.newToken(TT.KW_NS, fullIdent, fullIdent.length);
 
             case 'Struct':
             case 'struct':
-                return new Token(TT.KW_STRUCT, fullIdent);
+                return this.newToken(TT.KW_STRUCT, fullIdent, fullIdent.length);
 
             case 'if':
-                return new Token(TT.KW_IF, fullIdent);
+                return this.newToken(TT.KW_IF, fullIdent, fullIdent.length);
             case 'else':
-                return new Token(TT.KW_ELSE, fullIdent);
+                return this.newToken(TT.KW_ELSE, fullIdent, fullIdent.length);
             case 'for':
-                return new Token(TT.KW_FOR, fullIdent);
+                return this.newToken(TT.KW_FOR, fullIdent, fullIdent.length);
             case 'foreach':
-                return new Token(TT.KW_FOREACH, fullIdent);
+                return this.newToken(TT.KW_FOREACH, fullIdent, fullIdent.length);
             case 'in':
-                return new Token(TT.KW_IN, fullIdent);
+                return this.newToken(TT.KW_IN, fullIdent, fullIdent.length);
             case 'while':
-                return new Token(TT.KW_WHILE, fullIdent);
-            case 'local': 
-                return new Token(TT.KW_LOCAL, fullIdent);
+                return this.newToken(TT.KW_WHILE, fullIdent, fullIdent.length);
+            case 'local':
+                return this.newToken(TT.KW_LOCAL, fullIdent, fullIdent.length);
         }
 
         // If its none of those -> its an identifier
-        return new Token(TT.IDENTIFIER, fullIdent);
+        return this.newToken(TT.IDENTIFIER, fullIdent, fullIdent.length);
     }
 
     // cheeky token getter

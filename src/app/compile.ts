@@ -16,7 +16,7 @@ export default (path: string) => {
 
     var tokenInfo: any[] = []
     lexer.tokens.forEach(token => {
-        tokenInfo.push({'Token': TT[token.type], 'Value': token.value});
+        tokenInfo.push({'Token': TT[token.type], 'Value': token.value, Width: token.width, Position: token.pos});
     });
     console.table(tokenInfo);
 
